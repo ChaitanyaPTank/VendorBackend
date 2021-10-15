@@ -6,7 +6,7 @@ export const adminRegister = {
     lastName: Joi.string().required(),
     mobile: Joi.string().required(),
     password: Joi.string().required(),
-  })
+  }).unknown()
 };
 
 export const adminLogin = {

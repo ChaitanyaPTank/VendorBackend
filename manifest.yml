@@ -1,4 +1,5 @@
 # App Manifest
 applications:
 - name: mandirbackend
+  command: node app.js
   memory: 128M

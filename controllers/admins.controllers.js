@@ -14,7 +14,7 @@ export const register = async (req, res) => {
 
     const [existingUser] = await AdminsSchema.find({ mobile });
     if (existingUser) {
-      throw new Error('Mobile number is registered');
+      throw new Error('Mobile number is already registered.');
     }
 
     const admin = await AdminsSchema.create({
@@ -26,14 +26,14 @@ export const register = async (req, res) => {
 
     console.log(admin);
     if (!admin) {
-      throw new Error("Something went wrong");
+      throw new Error("Something went wrong.");
     }
 
-    return successResponse(req, res, admin)
+    return successResponse(req, res, admin);
 
   } catch (err) {
     console.log(err);
-    return errorResponse(req, res, err);
+    return errorResponse(req, res, err.message)
   }
 };
 

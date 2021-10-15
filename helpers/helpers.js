@@ -4,7 +4,7 @@ export const errorResponse = async (
   data = {},
   code = 500,
 ) => {
-  return res.status(code).send({ data, message });
+  return res.status(code).send({ message });
 };
 
 export const successResponse = async (
