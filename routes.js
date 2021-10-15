@@ -1,9 +1,12 @@
-const express = require('express');
+import { Router } from 'express';
+import { register } from './controllers/admins.controllers.js';
 
-const router = express.Router();
+const router = Router();
 
 router.get('/', (req, res) => {
     return res.status(200).send('Working');
 });
 
-module.exports = router;
+router.post('/admin/register', register);
+
+export default router;

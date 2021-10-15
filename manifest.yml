@@ -1,0 +1,4 @@
+# App Manifest
+applications:
+- name: mandirbackend
+  memory: 128M
