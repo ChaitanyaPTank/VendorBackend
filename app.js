@@ -1,26 +1,25 @@
 import express from 'express';
 import morgan from 'morgan';
-import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import config from './appconfig.js';
 import { ValidationError } from 'express-validation';
 
 
-config();
-
-
-// CONFIG Variables
-const PORT = process.env.PORT || 3000;
-const DB_PASS = process.env.DB_PASS;
-const DB_NAME = process.env.DB_NAME;
-const DB_USER = process.env.DB_USER;
-const DB_URI = `mongodb+srv://${DB_USER}:${DB_PASS}@mandir.6mpry.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`
+const {
+  PORT,
+  DB_USER,
+  DB_PASS,
+  DB_NAME,
+} = config;
+const DB_URI = `mongodb+srv://${DB_USER}:${DB_PASS}@mandir.6mpry.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`;
 
 
 mongoose.connect(DB_URI,
   {
     useUnifiedTopology: true,
     useNewUrlParser: true,
+    useFindAndModify: false,
   },
   (err) => {
     if (err) {
