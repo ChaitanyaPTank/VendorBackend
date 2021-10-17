@@ -1,15 +1,15 @@
-import { AdminsSchema } from '../models/admins.js';
+import { AdminsSchema } from '../models.js';
 import { successResponse, errorResponse } from '../helpers/helpers.js';
 import appconfig from '../appconfig.js';
 import jwt from 'jsonwebtoken';
 
 
-const { SECRET, EXPIRE_TIME } = appconfig;
+const { SECRET, EXPIRE_TIME, MESSAGE } = appconfig;
+const MSG = MESSAGE;
 
 
 export const register = async (req, res) => {
   try {
-    console.log(req.body);
     const {
       firstName,
       lastName,
@@ -19,7 +19,7 @@ export const register = async (req, res) => {
 
     const [existingUser] = await AdminsSchema.find({ mobile });
     if (existingUser) {
-      throw new Error('Mobile number is already registered.');
+      throw new Error(MSG.USER_ALREADY_REG);
     }
 
     const admin = await AdminsSchema.create({
@@ -31,7 +31,7 @@ export const register = async (req, res) => {
 
     console.log(admin);
     if (!admin) {
-      throw new Error("Something went wrong.");
+      throw new Error(MSG.SOMETHING_WRONG);
     }
 
     return successResponse(req, res, admin);
@@ -52,11 +52,11 @@ export const login = async (req, res) => {
     const [user] = await AdminsSchema.find({ mobile });
     console.log(user);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error(MSG.NO_USER);
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      throw new Error('Invalid password');
+      throw new Error(MSG.INV_PASS);
     }
     const token = jwt.sign({
       _id: user._id,
@@ -69,7 +69,7 @@ export const login = async (req, res) => {
     );
 
     if (!token) {
-      throw new Error('Something went wrong.');
+      throw new Error(MSG.SOMETHING_WRONG);
     }
     const updated = await AdminsSchema.findByIdAndUpdate(
       user._id,
@@ -77,11 +77,12 @@ export const login = async (req, res) => {
       { new: true }
     );
     if (!updated) {
-      throw new Error('Something went wrong.');
+      throw new Error(MSG.SOMETHING_WRONG);
     }
 
-    return successResponse(req, res, updated, 'Login successful.');
-
+    const data = JSON.parse(JSON.stringify(updated));
+    delete data.password;
+    return successResponse(req, res, data, MSG.LOGIN_SUCC);
   } catch (err) {
     console.log(err);
     return errorResponse(req, res, {}, err.message, 500);
@@ -96,7 +97,7 @@ export const logout = async (req, res) => {
       { $set: { accessToken: '' } },
       { new: true }
     );
-    return successResponse(req, res, {}, 'Logout successful.');
+    return successResponse(req, res, {}, MSG.LOGOUT_SUCC);
   } catch (err) {
     console.log(err);
     return errorResponse(req, res, {}, err.message, 500);

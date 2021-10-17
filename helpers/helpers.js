@@ -1,12 +1,13 @@
 import jwt from 'jsonwebtoken';
 import appconfig from '../appconfig.js';
-const { SECRET } = appconfig;
+const { SECRET, MESSAGE } = appconfig;
+const MSG = MESSAGE;
 
 
 export const errorResponse = async (
   req, res,
   data = {},
-  message = 'Something went wrong!',
+  message = MSG.SOMETHING_WRONG,
   code = 500,
 ) => {
   return res.status(code).send({ data, message });
@@ -16,11 +17,10 @@ export const errorResponse = async (
 export const successResponse = async (
   req, res,
   data = {},
-  message = 'Success.',
+  message = MSG.SUCC,
   code = 200,
 ) => {
-  const { password, ...rest } = JSON.parse(JSON.stringify(data));
-  return res.status(code).send({ data: rest, message });
+  return res.status(code).send({ data, message });
 };
 
 
@@ -33,8 +33,8 @@ export const Authentication = async (req, res, next) => {
       next();
       return;
     }
-    throw new Error('Token is not provided.');
+    throw new Error(MSG.NO_TOKEN);
   } catch (err) {
-    return errorResponse(req, res, {}, err.message, 500);
+    return errorResponse(req, res, {}, err.message, 401);
   }
 }

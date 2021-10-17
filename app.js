@@ -24,6 +24,7 @@ mongoose.connect(DB_URI,
   (err) => {
     if (err) {
       console.log(err);
+      return;
     }
     console.log("Connected to DB succesfully.");
   }
