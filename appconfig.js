@@ -17,6 +17,12 @@ const messages = {
   /** N */
   NO_USER: "User not found",
 
+  /** O */
+  ORDER_SUCC: "Order added succesfully.",
+
+  /** R */
+  REF_TOKEN_SUCC: "Token refreshed successfully.",
+
   /** S */
   SOMETHING_WRONG: "Something went wrong.",
   SOMETHING_WRONG: "Something went wrong.",

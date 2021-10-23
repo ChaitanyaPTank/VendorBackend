@@ -58,15 +58,7 @@ export const login = async (req, res) => {
     if (!isMatch) {
       throw new Error(MSG.INV_PASS);
     }
-    const token = jwt.sign({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      mobile: user.mobile,
-      type: 'admin',
-    }, SECRET,
-      { expiresIn: EXPIRE_TIME }
-    );
+    const token = makeToken(user);
 
     if (!token) {
       throw new Error(MSG.SOMETHING_WRONG);
@@ -102,4 +94,45 @@ export const logout = async (req, res) => {
     console.log(err);
     return errorResponse(req, res, {}, err.message, 500);
   }
+}
+
+
+export const refreshToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const [user] = await AdminsSchema.find({ accessToken: token });
+    console.log(user);
+    if (!user) {
+      return errorResponse(req, res, {}, 'Unauthorized user', 401);
+    }
+    const newToken = makeToken(user);
+    const updatedUser = await AdminsSchema.findByIdAndUpdate(
+      user._id,
+      { accessToken: newToken },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return errorResponse(req, res, {}, 'Error while refreshing the token.');
+    }
+    return successResponse(req, res, user, MSG.REF_TOKEN_SUCC);
+  } catch (err) {
+    console.log(err);
+    return errorResponse(req, res, {}, err.message);
+  }
+}
+
+
+/**
+ * UTILITY FUNCTIONS
+ */
+function makeToken(payload) {
+  return jwt.sign({
+    _id: payload._id,
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    mobile: payload.mobile,
+    type: 'admin',
+  }, SECRET,
+    { expiresIn: EXPIRE_TIME }
+  );
 }
