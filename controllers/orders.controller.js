@@ -38,33 +38,57 @@ export const getOrders = async (req, res) => {
     if (!req.user.type === 'admin') {
       findQuery.addedBy = mongoose.Types.ObjectId(req.user._id);
     }
-    // const orders = await OrdersSchema.aggregate([
-    //   {
-    //     $match: findQuery
-    //   },
-    // {
-    //   $unwind: "$items"
-    // },
-    // {
-    //   $lookup: {
-    //     from: 'tbl_items',
-    //     localField: 'items.item',
-    //     foreignField: '_id',
-    //     as: 'item'
-    //   }
-    // },
-    // {
-    //   $unwind: "$item"
-    // },
-    // {
-    //   $addFields: {
-    //     "item.quantity": "$items.quantity",
-    //   }
-    // },
-    // ]);
 
-    const orders = await OrdersSchema.find(findQuery)
-      .populate('items.item', '-__v');
+    const orders = await OrdersSchema.aggregate([
+      {
+        $match: findQuery
+      },
+      {
+        $unwind: "$items",
+      },
+      {
+        $lookup: {
+          from: "tbl_items",
+          localField: "items.item",
+          foreignField: "_id",
+          as: "items.item"
+        }
+      },
+      {
+        $unwind: "$items.item",
+      },
+      {
+        $addFields: {
+          "items.item.quantity": "$items.quantity",
+          "items.item.item": "$items.item._id",
+        }
+      },
+      {
+        $project: {
+          name: 1,
+          mobile: 1,
+          addedBy: 1,
+          createdAt: 1,
+          item: "$items.item"
+        }
+      },
+      {
+        $group: {
+          _id: "$name",
+          name: { $first: "$name" },
+          mobile: { $first: "$mobile" },
+          items: { $push: "$item" }
+        }
+      }
+    ]);
+
+    // const orders = await OrdersSchema.find(findQuery)
+    //   .populate('items.item', '-__v').lean();
+
+
+    // console.dir(JSON.parse(JSON.stringify(orders[0])), {
+    //   depth: 3
+    // });
 
     if (!orders) {
       throw new Error('Error while fetching orders.');

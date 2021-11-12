@@ -13,6 +13,7 @@ const {
   DB_NAME,
 } = config;
 const DB_URI = `mongodb+srv://${DB_USER}:${DB_PASS}@mandir.6mpry.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`;
+// const DB_URI = "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false";
 
 
 mongoose.connect(DB_URI,
