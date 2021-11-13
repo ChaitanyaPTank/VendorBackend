@@ -9,7 +9,7 @@ const MSG = MESSAGE;
 export const addOrder = async (req, res) => {
   try {
     const { name, items, mobile } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     const [existingOrder] = await OrdersSchema.find({ addedBy: req.user._id, name });
     if (existingOrder) {
       throw new Error('Duplicate order found.');
@@ -26,7 +26,7 @@ export const addOrder = async (req, res) => {
     }
     return successResponse(req, res, newOrder, MSG.ORDER_SUCC);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return errorResponse(req, res, {}, err.message);
   }
 }
@@ -74,16 +74,16 @@ export const getOrders = async (req, res) => {
       },
       {
         $group: {
-          _id: "$name",
+          _id: "$_id",
           name: { $first: "$name" },
           mobile: { $first: "$mobile" },
           items: { $push: "$item" }
         }
+      },
+      {
+        $sort: { name: 1 }
       }
     ]);
-
-    // const orders = await OrdersSchema.find(findQuery)
-    //   .populate('items.item', '-__v').lean();
 
 
     // console.dir(JSON.parse(JSON.stringify(orders[0])), {
@@ -95,7 +95,30 @@ export const getOrders = async (req, res) => {
     }
     return successResponse(req, res, orders, 'Success.');
   } catch (err) {
-    console.log(err);
+    // console.log(err);
+    return errorResponse(req, res, {}, err.message);
+  }
+}
+
+
+export const updateOrder = async (req, res) => {
+  try {
+    const {
+      name,
+      mobile,
+      items,
+      id,
+    } = req.body;
+    const payload = {};
+    if (name) payload.name = name;
+    if (mobile) payload.mobile = mobile;
+    if (items) payload.items = items;
+    // console.log({ payload });
+    const updated = await OrdersSchema.findByIdAndUpdate(id, payload, { new: true });
+    // console.log({ updated });
+    return successResponse(req, res, updated, 'Success.');
+  } catch (err) {
+    // console.log(err);
     return errorResponse(req, res, {}, err.message);
   }
 }

@@ -33,5 +33,6 @@ router.delete('/admin/delete-item/:id', Authentication, itemsController.deleteIt
 // orders routes
 router.post('/add-order', Authentication, ordersController.addOrder);
 router.get('/orders', Authentication, ordersController.getOrders);
+router.put('/update-order', Authentication, ordersController.updateOrder);
 
 export default router;
