@@ -35,7 +35,7 @@ export const addOrder = async (req, res) => {
 export const getOrders = async (req, res) => {
   try {
     const findQuery = {};
-    if (!req.user.type === 'admin') {
+    if (!req.user.type !== 'admin') {
       findQuery.addedBy = mongoose.Types.ObjectId(req.user._id);
     }
 
@@ -77,7 +77,8 @@ export const getOrders = async (req, res) => {
           _id: "$_id",
           name: { $first: "$name" },
           mobile: { $first: "$mobile" },
-          items: { $push: "$item" }
+          items: { $push: "$item" },
+          addedBy: { $first: "$addedBy" },
         }
       },
       {
