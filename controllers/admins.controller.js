@@ -101,7 +101,6 @@ export const refreshToken = async (req, res) => {
   try {
     const { token } = req.body;
     const [user] = await AdminsSchema.find({ accessToken: token });
-    console.log(user);
     if (!user) {
       return errorResponse(req, res, {}, 'Unauthorized user', 401);
     }
@@ -114,7 +113,7 @@ export const refreshToken = async (req, res) => {
     if (!updatedUser) {
       return errorResponse(req, res, {}, 'Error while refreshing the token.');
     }
-    return successResponse(req, res, user, MSG.REF_TOKEN_SUCC);
+    return successResponse(req, res, { token: updatedUser.accessToken }, MSG.REF_TOKEN_SUCC);
   } catch (err) {
     console.log(err);
     return errorResponse(req, res, {}, err.message);

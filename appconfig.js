@@ -43,6 +43,6 @@ export default {
   DB_NAME: process.env.DB_NAME,
   DB_USER: process.env.DB_USER,
   SECRET: process.env.SECRET,
-  EXPIRE_TIME: 60 * 60 * 24,
+  EXPIRE_TIME: 24 * 60 * 60,
   MESSAGE: messages,
 }

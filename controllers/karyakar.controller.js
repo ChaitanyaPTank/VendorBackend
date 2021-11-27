@@ -96,7 +96,6 @@ export const refreshToken = async (req, res) => {
   try {
     const { token } = req.body;
     const [user] = await KaryakarsSchema.find({ accessToken: token });
-    console.log(user);
     if (!user) {
       return errorResponse(req, res, {}, 'Unauthorized user', 401);
     }
@@ -106,10 +105,11 @@ export const refreshToken = async (req, res) => {
       { accessToken: newToken },
       { new: true }
     );
+    console.log(updatedUser);
     if (!updatedUser) {
       return errorResponse(req, res, {}, 'Error while refreshing the token.');
     }
-    return successResponse(req, res, user, MSG.REF_TOKEN_SUCC);
+    return successResponse(req, res, { token: updatedUser.accessToken }, MSG.REF_TOKEN_SUCC);
   } catch (err) {
     console.log(err);
     return errorResponse(req, res, {}, err.message);
@@ -121,13 +121,16 @@ export const refreshToken = async (req, res) => {
  * UTILITY FUNCTIONS
  */
 function makeToken(payload) {
-  return jwt.sign({
-    _id: payload._id,
-    firstName: payload.firstName,
-    lastName: payload.lastName,
-    mobile: payload.mobile,
-    type: 'admin',
-  }, SECRET,
+  const token = jwt.sign(
+    {
+      _id: payload._id,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      mobile: payload.mobile,
+    },
+    SECRET,
     { expiresIn: EXPIRE_TIME }
   );
+  console.log(jwt.decode(token));
+  return token;
 }
